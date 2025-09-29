@@ -49,9 +49,9 @@
             </div>
 
             <!-- News List -->
-            <div class="space-y-4">
+            <div id="newsList" class="space-y-4">
                 @foreach($news as $item)
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-6" data-news-id="{{ $item['id'] }}">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center mb-2">
@@ -62,12 +62,24 @@
                             <div class="text-sm text-gray-500">{{ Str::limit($item['content'], 150) }}</div>
                         </div>
                         <div class="ml-6 flex space-x-2">
-                            <button onclick="editNews({{ $item['id'] }})" class="text-indigo-600 hover:text-indigo-900 text-sm px-3 py-1 border border-indigo-200 rounded">แก้ไข</button>
+                            <button onclick="editNews({{ json_encode($item) }})" class="text-indigo-600 hover:text-indigo-900 text-sm px-3 py-1 border border-indigo-200 rounded">แก้ไข</button>
                             <button onclick="deleteNews({{ $item['id'] }})" class="text-red-600 hover:text-red-900 text-sm px-3 py-1 border border-red-200 rounded">ลบ</button>
                         </div>
                     </div>
                 </div>
                 @endforeach
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="hidden bg-green-50 border-l-4 border-green-400 p-4 mt-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <span class="text-green-400">✅</span>
+                    </div>
+                    <div class="ml-3">
+                        <p id="successText" class="text-sm text-green-700"></p>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -112,21 +124,116 @@
     </div>
 
     <script>
+        let editingNewsId = null;
+        
+        function showSuccessMessage(message) {
+            const successDiv = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            successText.textContent = message;
+            successDiv.classList.remove('hidden');
+            
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                successDiv.classList.add('hidden');
+            }, 5000);
+        }
+        
+        function addNewsToList(news) {
+            const list = document.getElementById('newsList');
+            const div = document.createElement('div');
+            div.setAttribute('data-news-id', news.id);
+            div.className = 'bg-white rounded-lg shadow p-6';
+            
+            div.innerHTML = `
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-2">
+                            <h3 class="text-lg font-semibold text-gray-800 mr-4">${news.title}</h3>
+                            <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-sm">${news.date}</span>
+                        </div>
+                        <p class="text-gray-600 mb-3">${news.summary}</p>
+                        <div class="text-sm text-gray-500">${news.content.length > 150 ? news.content.substring(0, 150) + '...' : news.content}</div>
+                    </div>
+                    <div class="ml-6 flex space-x-2">
+                        <button onclick="editNews(${JSON.stringify(news).replace(/"/g, '&quot;')})" class="text-indigo-600 hover:text-indigo-900 text-sm px-3 py-1 border border-indigo-200 rounded">แก้ไข</button>
+                        <button onclick="deleteNews(${news.id})" class="text-red-600 hover:text-red-900 text-sm px-3 py-1 border border-red-200 rounded">ลบ</button>
+                    </div>
+                </div>
+            `;
+            
+            list.appendChild(div);
+        }
+        
+        function updateNewsInList(news) {
+            const card = document.querySelector(`div[data-news-id="${news.id}"]`);
+            if (card) {
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <h3 class="text-lg font-semibold text-gray-800 mr-4">${news.title}</h3>
+                                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-sm">${news.date}</span>
+                            </div>
+                            <p class="text-gray-600 mb-3">${news.summary}</p>
+                            <div class="text-sm text-gray-500">${news.content.length > 150 ? news.content.substring(0, 150) + '...' : news.content}</div>
+                        </div>
+                        <div class="ml-6 flex space-x-2">
+                            <button onclick="editNews(${JSON.stringify(news).replace(/"/g, '&quot;')})" class="text-indigo-600 hover:text-indigo-900 text-sm px-3 py-1 border border-indigo-200 rounded">แก้ไข</button>
+                            <button onclick="deleteNews(${news.id})" class="text-red-600 hover:text-red-900 text-sm px-3 py-1 border border-red-200 rounded">ลบ</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        function removeNewsFromList(newsId) {
+            const card = document.querySelector(`div[data-news-id="${newsId}"]`);
+            if (card) {
+                card.remove();
+            }
+        }
+
         function openAddModal() {
+            editingNewsId = null;
             document.getElementById('modalTitle').textContent = 'เพิ่มข่าวใหม่';
             document.getElementById('newsForm').reset();
             document.getElementById('newsModal').classList.remove('hidden');
         }
 
-        function editNews(id) {
+        function editNews(news) {
+            editingNewsId = news.id;
             document.getElementById('modalTitle').textContent = 'แก้ไขข่าว';
+            document.getElementById('newsTitle').value = news.title;
+            document.getElementById('newsDate').value = news.date;
+            document.getElementById('newsSummary').value = news.summary;
+            document.getElementById('newsContent').value = news.content;
+            document.getElementById('newsImage').value = news.image;
             document.getElementById('newsModal').classList.remove('hidden');
-            alert('แก้ไขข่าว ID: ' + id + '\n\nในระบบจริง จะแสดงข้อมูลเดิมในฟอร์ม');
         }
 
         function deleteNews(id) {
             if (confirm('คุณต้องการลบข่าวนี้หรือไม่?')) {
-                alert('ลบข่าว ID: ' + id + ' สำเร็จ\n\nในระบบจริง จะลบข้อมูลจากฐานข้อมูล');
+                fetch(`/admin/news/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccessMessage(data.message);
+                        removeNewsFromList(id);
+                    } else {
+                        alert('เกิดข้อผิดพลาด: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                });
             }
         }
 
@@ -136,12 +243,49 @@
 
         document.getElementById('newsForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const title = document.getElementById('newsTitle').value;
-            const date = document.getElementById('newsDate').value;
-            const summary = document.getElementById('newsSummary').value;
             
-            alert('บันทึกข่าวสำเร็จ!\n\nหัวข้อ: ' + title + '\nวันที่: ' + date + '\n\nในระบบจริง จะบันทึกลงฐานข้อมูล');
-            closeModal();
+            const formData = {
+                title: document.getElementById('newsTitle').value,
+                date: document.getElementById('newsDate').value,
+                summary: document.getElementById('newsSummary').value,
+                content: document.getElementById('newsContent').value,
+                image: document.getElementById('newsImage').value
+            };
+            
+            const isEditing = editingNewsId !== null;
+            const url = isEditing ? `/admin/news/${editingNewsId}` : '/admin/news';
+            const method = isEditing ? 'PUT' : 'POST';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage(data.message);
+                    closeModal();
+                    
+                    if (isEditing) {
+                        // Update existing item with returned data
+                        updateNewsInList(data.news);
+                    } else {
+                        // Add new item with returned data
+                        addNewsToList(data.news);
+                    }
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+            });
         });
 
         document.getElementById('newsModal').addEventListener('click', function(e) {

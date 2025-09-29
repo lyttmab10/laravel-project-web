@@ -93,6 +93,18 @@
 
             <!-- Faculty Table -->
             <div class="bg-white rounded-lg shadow overflow-hidden">
+                <!-- Success Message -->
+                <div id="successMessage" class="hidden bg-green-50 border-l-4 border-green-400 p-4 m-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <span class="text-green-400">✅</span>
+                        </div>
+                        <div class="ml-3">
+                            <p id="successText" class="text-sm text-green-700"></p>
+                        </div>
+                    </div>
+                </div>
+                
                 <table class="min-w-full">
                     <thead class="bg-gray-50">
                         <tr>
@@ -102,9 +114,9 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">การจัดการ</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody id="facultyTableBody" class="bg-white divide-y divide-gray-200">
                         @foreach($faculty as $member)
-                        <tr>
+                        <tr data-faculty-id="{{ $member['id'] }}">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ $member['name'] }}</div>
                             </td>
@@ -115,7 +127,7 @@
                                 <img src="{{ $member['image'] }}" alt="{{ $member['name'] }}" class="w-12 h-12 rounded-full object-cover">
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button onclick="editFaculty({{ json_encode($member['id']) }})" class="text-indigo-600 hover:text-indigo-900 mr-3">แก้ไข</button>
+                                <button onclick="editFaculty({{ json_encode($member) }})" class="text-indigo-600 hover:text-indigo-900 mr-3">แก้ไข</button>
                                 <button onclick="deleteFaculty({{ json_encode($member['id']) }})" class="text-red-600 hover:text-red-900">ลบ</button>
                             </td>
                         </tr>
@@ -156,15 +168,85 @@
     </div>
 
     <script>
+        let editingFacultyId = null;
+        
+        function showSuccessMessage(message) {
+            const successDiv = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            successText.textContent = message;
+            successDiv.classList.remove('hidden');
+            
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                successDiv.classList.add('hidden');
+            }, 5000);
+        }
+        
+        function addFacultyToTable(faculty) {
+            const tbody = document.getElementById('facultyTableBody');
+            const row = document.createElement('tr');
+            row.setAttribute('data-faculty-id', faculty.id);
+            
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">${faculty.name}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${faculty.position}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <img src="${faculty.image}" alt="${faculty.name}" class="w-12 h-12 rounded-full object-cover">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button onclick="editFaculty(${JSON.stringify(faculty).replace(/"/g, '&quot;')})" class="text-indigo-600 hover:text-indigo-900 mr-3">แก้ไข</button>
+                    <button onclick="deleteFaculty(${faculty.id})" class="text-red-600 hover:text-red-900">ลบ</button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        }
+        
+        function updateFacultyInTable(faculty) {
+            const row = document.querySelector(`tr[data-faculty-id="${faculty.id}"]`);
+            if (row) {
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${faculty.name}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${faculty.position}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <img src="${faculty.image}" alt="${faculty.name}" class="w-12 h-12 rounded-full object-cover">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editFaculty(${JSON.stringify(faculty).replace(/"/g, '&quot;')})" class="text-indigo-600 hover:text-indigo-900 mr-3">แก้ไข</button>
+                        <button onclick="deleteFaculty(${faculty.id})" class="text-red-600 hover:text-red-900">ลบ</button>
+                    </td>
+                `;
+            }
+        }
+        
+        function removeFacultyFromTable(facultyId) {
+            const row = document.querySelector(`tr[data-faculty-id="${facultyId}"]`);
+            if (row) {
+                row.remove();
+            }
+        }
+
         function openAddModal() {
+            editingFacultyId = null;
             document.getElementById('modalTitle').textContent = 'เพิ่มอาจารย์ใหม่';
             document.getElementById('facultyForm').reset();
             document.getElementById('facultyModal').classList.remove('hidden');
         }
 
-        function editFaculty(id) {
+        function editFaculty(faculty) {
+            editingFacultyId = faculty.id;
             document.getElementById('modalTitle').textContent = 'แก้ไขข้อมูลอาจารย์';
-            // In a real app, you would fetch and populate the form with existing data
+            document.getElementById('facultyName').value = faculty.name;
+            document.getElementById('facultyPosition').value = faculty.position;
+            document.getElementById('facultyImage').value = faculty.image;
             document.getElementById('facultyModal').classList.remove('hidden');
         }
 
@@ -181,8 +263,8 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(data.message);
-                        window.location.reload();
+                        showSuccessMessage(data.message);
+                        removeFacultyFromTable(id);
                     } else {
                         alert('เกิดข้อผิดพลาด: ' + data.message);
                     }
@@ -207,8 +289,12 @@
                 image: document.getElementById('facultyImage').value
             };
             
-            fetch('/admin/faculty', {
-                method: 'POST',
+            const isEditing = editingFacultyId !== null;
+            const url = isEditing ? `/admin/faculty/${editingFacultyId}` : '/admin/faculty';
+            const method = isEditing ? 'PUT' : 'POST';
+            
+            fetch(url, {
+                method: method,
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                     'Content-Type': 'application/json',
@@ -219,9 +305,16 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    showSuccessMessage(data.message);
                     closeModal();
-                    window.location.reload();
+                    
+                    if (isEditing) {
+                        // Update existing row with returned data
+                        updateFacultyInTable(data.faculty);
+                    } else {
+                        // Add new row with returned data
+                        addFacultyToTable(data.faculty);
+                    }
                 } else {
                     alert('เกิดข้อผิดพลาด: ' + data.message);
                 }

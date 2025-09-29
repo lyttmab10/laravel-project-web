@@ -92,9 +92,9 @@
             </div>
 
             <!-- Programs Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div id="programsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($programs as $program)
-                <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="bg-white rounded-lg shadow overflow-hidden" data-program-id="{{ $program['id'] }}">
                     <img src="{{ $program['image'] }}" alt="{{ $program['title'] }}" class="w-full h-48 object-cover">
                     <div class="p-4">
                         <div class="flex items-center justify-between mb-2">
@@ -108,13 +108,25 @@
                         <div class="flex items-center justify-between">
                             <span class="text-xs text-gray-500">{{ $program['date'] }}</span>
                             <div class="space-x-2">
-                                <button onclick="editProgram({{ $program['id'] }})" class="text-indigo-600 hover:text-indigo-900 text-sm">แก้ไข</button>
+                                <button onclick="editProgram({{ json_encode($program) }})" class="text-indigo-600 hover:text-indigo-900 text-sm">แก้ไข</button>
                                 <button onclick="deleteProgram({{ $program['id'] }})" class="text-red-600 hover:text-red-900 text-sm">ลบ</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 @endforeach
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="hidden bg-green-50 border-l-4 border-green-400 p-4 mt-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <span class="text-green-400">✅</span>
+                    </div>
+                    <div class="ml-3">
+                        <p id="successText" class="text-sm text-green-700"></p>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -161,21 +173,125 @@
     </div>
 
     <script>
+        let editingProgramId = null;
+        
+        function showSuccessMessage(message) {
+            const successDiv = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            successText.textContent = message;
+            successDiv.classList.remove('hidden');
+            
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                successDiv.classList.add('hidden');
+            }, 5000);
+        }
+        
+        function addProgramToGrid(program) {
+            const grid = document.getElementById('programsGrid');
+            const div = document.createElement('div');
+            div.setAttribute('data-program-id', program.id);
+            div.className = 'bg-white rounded-lg shadow overflow-hidden';
+            
+            div.innerHTML = `
+                <img src="${program.image}" alt="${program.title}" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-lg font-semibold text-gray-800">${program.title}</h3>
+                        <span class="bg-primary-100 text-primary-700 px-2 py-1 rounded text-sm">${program.duration}</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-3">${program.description.length > 100 ? program.description.substring(0, 100) + '...' : program.description}</p>
+                    <div class="bg-primary-50 border-l-4 border-primary-500 p-2 mb-3">
+                        <p class="text-primary-800 text-sm">${program.activity}</p>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">${program.date}</span>
+                        <div class="space-x-2">
+                            <button onclick="editProgram(${JSON.stringify(program).replace(/"/g, '&quot;')})" class="text-indigo-600 hover:text-indigo-900 text-sm">แก้ไข</button>
+                            <button onclick="deleteProgram(${program.id})" class="text-red-600 hover:text-red-900 text-sm">ลบ</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            grid.appendChild(div);
+        }
+        
+        function updateProgramInGrid(program) {
+            const card = document.querySelector(`div[data-program-id="${program.id}"]`);
+            if (card) {
+                card.innerHTML = `
+                    <img src="${program.image}" alt="${program.title}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-gray-800">${program.title}</h3>
+                            <span class="bg-primary-100 text-primary-700 px-2 py-1 rounded text-sm">${program.duration}</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">${program.description.length > 100 ? program.description.substring(0, 100) + '...' : program.description}</p>
+                        <div class="bg-primary-50 border-l-4 border-primary-500 p-2 mb-3">
+                            <p class="text-primary-800 text-sm">${program.activity}</p>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">${program.date}</span>
+                            <div class="space-x-2">
+                                <button onclick="editProgram(${JSON.stringify(program).replace(/"/g, '&quot;')})" class="text-indigo-600 hover:text-indigo-900 text-sm">แก้ไข</button>
+                                <button onclick="deleteProgram(${program.id})" class="text-red-600 hover:text-red-900 text-sm">ลบ</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        function removeProgramFromGrid(programId) {
+            const card = document.querySelector(`div[data-program-id="${programId}"]`);
+            if (card) {
+                card.remove();
+            }
+        }
+
         function openAddModal() {
+            editingProgramId = null;
             document.getElementById('modalTitle').textContent = 'เพิ่มผลงานใหม่';
             document.getElementById('programForm').reset();
             document.getElementById('programModal').classList.remove('hidden');
         }
 
-        function editProgram(id) {
+        function editProgram(program) {
+            editingProgramId = program.id;
             document.getElementById('modalTitle').textContent = 'แก้ไขผลงาน';
+            document.getElementById('programTitle').value = program.title;
+            document.getElementById('programDuration').value = program.duration;
+            document.getElementById('programDescription').value = program.description;
+            document.getElementById('programActivity').value = program.activity;
+            document.getElementById('programImage').value = program.image;
+            document.getElementById('programDate').value = program.date;
             document.getElementById('programModal').classList.remove('hidden');
-            alert('แก้ไขผลงาน ID: ' + id + '\n\nในระบบจริง จะแสดงข้อมูลเดิมในฟอร์ม');
         }
 
         function deleteProgram(id) {
             if (confirm('คุณต้องการลบผลงานนี้หรือไม่?')) {
-                alert('ลบผลงาน ID: ' + id + ' สำเร็จ\n\nในระบบจริง จะลบข้อมูลจากฐานข้อมูล');
+                fetch(`/admin/programs/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccessMessage(data.message);
+                        removeProgramFromGrid(id);
+                    } else {
+                        alert('เกิดข้อผิดพลาด: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                });
             }
         }
 
@@ -185,13 +301,50 @@
 
         document.getElementById('programForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const title = document.getElementById('programTitle').value;
-            const duration = document.getElementById('programDuration').value;
-            const description = document.getElementById('programDescription').value;
-            const activity = document.getElementById('programActivity').value;
             
-            alert('บันทึกผลงานสำเร็จ!\n\nชื่อ: ' + title + '\nระยะเวลา: ' + duration + '\n\nในระบบจริง จะบันทึกลงฐานข้อมูล');
-            closeModal();
+            const formData = {
+                title: document.getElementById('programTitle').value,
+                duration: document.getElementById('programDuration').value,
+                description: document.getElementById('programDescription').value,
+                activity: document.getElementById('programActivity').value,
+                image: document.getElementById('programImage').value,
+                date: document.getElementById('programDate').value
+            };
+            
+            const isEditing = editingProgramId !== null;
+            const url = isEditing ? `/admin/programs/${editingProgramId}` : '/admin/programs';
+            const method = isEditing ? 'PUT' : 'POST';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage(data.message);
+                    closeModal();
+                    
+                    if (isEditing) {
+                        // Update existing card with returned data
+                        updateProgramInGrid(data.program);
+                    } else {
+                        // Add new card with returned data
+                        addProgramToGrid(data.program);
+                    }
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+            });
         });
 
         // Close modal when clicking outside
