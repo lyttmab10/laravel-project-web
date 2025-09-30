@@ -6,6 +6,23 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>จัดการข่าวสาร - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            500: '#dc2626',
+                            600: '#b91c1c',
+                            700: '#991b1b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Noto Sans Thai', sans-serif; }
@@ -34,6 +51,11 @@
                     <li><a href="{{ route('admin.faculty') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded"><span class="mr-3">👨‍🏫</span>อาจารย์ประจำสาขา</a></li>
                     <li><a href="{{ route('admin.programs') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded"><span class="mr-3">🎯</span>ผลงาน</a></li>
                     <li><a href="{{ route('admin.news') }}" class="flex items-center p-3 text-gray-700 bg-blue-50 border-r-4 border-blue-500 rounded-l"><span class="mr-3">📰</span>ข่าวสารและกิจกรรม</a></li>
+                    <li><a href="{{ route('admin.curriculum') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded"><span class="mr-3">📚</span>หลักสูตร</a></li>
+                    <li><a href="{{ route('admin.laboratories') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded"><span class="mr-3">🔬</span>ห้องปฏิบัติการ</a></li>
+                    <li><a href="{{ route('admin.faculty.research') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded"><span class="mr-3">📊</span>ผลงานอาจารย์</a></li>
+                    <li><a href="{{ route('admin.student.projects') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded"><span class="mr-3">💻</span>ผลงานนักศึกษา</a></li>
+                    <li><a href="{{ route('admin.alumni') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded"><span class="mr-3">👨‍🎓</span>ข้อมูลศิษย์เก่า</a></li>
                 </ul>
             </div>
         </nav>
@@ -59,7 +81,7 @@
                                 <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-sm">{{ $item['date'] }}</span>
                             </div>
                             <p class="text-gray-600 mb-3">{{ $item['summary'] }}</p>
-                            <div class="text-sm text-gray-500">{{ Str::limit($item['content'], 150) }}</div>
+                            <div class="text-sm text-gray-500">{{ str($item['content'])->limit(150) }}</div>
                         </div>
                         <div class="ml-6 flex space-x-2">
                             <button onclick="editNews({{ json_encode($item) }})" class="text-indigo-600 hover:text-indigo-900 text-sm px-3 py-1 border border-indigo-200 rounded">แก้ไข</button>

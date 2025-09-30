@@ -13,4 +13,9 @@ class Faculty extends Model
         'position',
         'image'
     ];
+    
+    public function research()
+    {
+        return $this->hasMany(FacultyResearch::class);
+    }
 }

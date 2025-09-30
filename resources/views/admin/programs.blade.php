@@ -12,11 +12,11 @@
                 extend: {
                     colors: {
                         primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            500: '#dc2626',
+                            600: '#b91c1c',
+                            700: '#991b1b',
                         }
                     }
                 }
@@ -73,6 +73,36 @@
                             ข่าวสารและกิจกรรม
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('admin.curriculum') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
+                            <span class="mr-3">📚</span>
+                            หลักสูตร
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.laboratories') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
+                            <span class="mr-3">🔬</span>
+                            ห้องปฏิบัติการ
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.faculty.research') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
+                            <span class="mr-3">📊</span>
+                            ผลงานอาจารย์
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.student.projects') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
+                            <span class="mr-3">💻</span>
+                            ผลงานนักศึกษา
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.alumni') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
+                            <span class="mr-3">👨‍🎓</span>
+                            ข้อมูลศิษย์เก่า
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -101,7 +131,7 @@
                             <h3 class="text-lg font-semibold text-gray-800">{{ $program['title'] }}</h3>
                             <span class="bg-primary-100 text-primary-700 px-2 py-1 rounded text-sm">{{ $program['duration'] }}</span>
                         </div>
-                        <p class="text-gray-600 text-sm mb-3">{{ Str::limit($program['description'], 100) }}</p>
+                        <p class="text-gray-600 text-sm mb-3">{{ str($program['description'])->limit(100) }}</p>
                         <div class="bg-primary-50 border-l-4 border-primary-500 p-2 mb-3">
                             <p class="text-primary-800 text-sm">{{ $program['activity'] }}</p>
                         </div>

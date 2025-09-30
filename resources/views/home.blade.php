@@ -20,10 +20,10 @@
             </p>
             
             <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-delay-3">
-                <button class="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105">
+                <button class="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 border-b-2 border-gray-300">
                     {{ $data['hero']['cta_text'] }}
                 </button>
-                <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-all">
+                <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-all border-b-2 border-gray-300">
                     ดูผลงาน
                 </button>
             </div>
@@ -31,28 +31,144 @@
     </div>
 </section>
 
-<!-- About Section -->
-<section id="about" class="py-20 bg-gray-50">
+<!-- Curriculum Section -->
+<section class="py-20 bg-white dark:bg-gray-900 dark-transition">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                ข้อมูลทั่วไปของหลักสูตร
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                หลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมซอฟต์แวร์
+            </p>
+        </div>
+        
+        @if(isset($data['curriculum']) && $data['curriculum'])
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div class="p-8 md:p-12">
+                <!-- Degree Information Header -->
+                <div class="text-center mb-12">
+                    <h3 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                        {{ $data['curriculum']->degree_name_th }}
+                    </h3>
+                    <p class="text-lg text-primary-600 dark:text-primary-400 font-semibold mb-6">
+                        {{ $data['curriculum']->degree_name_en }}
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <span class="bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-200 px-4 py-2 rounded-full font-semibold">
+                            {{ $data['curriculum']->degree_abbr_th }}
+                        </span>
+                        <span class="bg-secondary-100 dark:bg-gray-600 text-secondary-700 dark:text-gray-200 px-4 py-2 rounded-full font-semibold">
+                            {{ $data['curriculum']->degree_abbr_en }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Key Information Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <!-- Credits -->
+                    <div class="bg-primary-50 dark:bg-primary-900/20 p-6 rounded-xl border border-primary-200 dark:border-primary-700">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-2">{{ $data['curriculum']->credits }}</div>
+                            <div class="text-primary-800 dark:text-primary-200 font-semibold">หน่วยกิต</div>
+                            <div class="text-sm text-primary-600 dark:text-primary-300 mt-1">ไม่น้อยกว่า</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Duration -->
+                    <div class="bg-primary-50 dark:bg-primary-900/20 p-6 rounded-xl border border-primary-200 dark:border-primary-700">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-2">ปี {{ $data['curriculum']->duration_years }}</div>
+                            <div class="text-primary-800 dark:text-primary-200 font-semibold">ระยะเวลา</div>
+                            <div class="text-sm text-primary-600 dark:text-primary-300 mt-1">ระยะเวลาเรียน</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tuition Fee -->
+                    <div class="bg-primary-50 dark:bg-primary-900/20 p-6 rounded-xl border border-primary-200 dark:border-primary-700">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-2">{{ number_format($data['curriculum']->tuition_fee) }}</div>
+                            <div class="text-primary-800 dark:text-primary-200 font-semibold">บาท</div>
+                            <div class="text-sm text-primary-600 dark:text-primary-300 mt-1">ค่าเรียน/เทอม</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Language -->
+                    <div class="bg-primary-50 dark:bg-primary-900/20 p-6 rounded-xl border border-primary-200 dark:border-primary-700">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-2">ไทย</div>
+                            <div class="text-primary-800 dark:text-primary-200 font-semibold">ภาษาที่ใช้</div>
+                            <div class="text-sm text-primary-600 dark:text-primary-300 mt-1">{{ $data['curriculum']->language }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Career Prospects -->
+                <div class="mb-8">
+                    <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">อาชีพหลังสำเร็จการศึกษา</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-primary-200 dark:border-primary-700 text-center">
+                            <h5 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-2">เจ้าหน้าที่ตรวจสอบคุณภาพซอฟต์แวร์</h5>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">Quality Assurance Engineer</p>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-primary-200 dark:border-primary-700 text-center">
+                            <h5 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-2">โปรแกรมเมอร์</h5>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">Programmer</p>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-primary-200 dark:border-primary-700 text-center">
+                            <h5 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-2">วิศวกรซอฟต์แวร์</h5>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">Software Engineer</p>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-primary-200 dark:border-primary-700 text-center">
+                            <h5 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-2">นักทดสอบระบบ</h5>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">System Tester</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="text-center">
+                    <a href="{{ route('curriculum') }}" class="inline-block bg-primary-600 dark:bg-primary-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 dark:hover:bg-primary-800 transition-colors border-b-2 border-gray-300 dark:border-gray-600">
+                        ดูรายละเอียดเพิ่มเติม
+                    </a>
+                </div>
+            </div>
+        </div>
+        @else
+        <div class="text-center py-16">
+            <div class="text-6xl mb-4">📚</div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">ไม่พบข้อมูลหลักสูตร</h3>
+            <p class="text-gray-600 dark:text-gray-400">กรุณาติดต่อเจ้าหน้าที่เพื่อขอข้อมูลเพิ่มเติม</p>
+        </div>
+        @endif
+    </div>
+</section>
+
+<!-- Faculty Section -->
+<section id="about" class="py-20 bg-gray-50 dark:bg-gray-800 dark-transition">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
                 อาจารย์ประจำสาขา
             </h2>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                 ทีมอาจารย์ผู้เชี่ยวชาญที่มีประสบการณ์และความเชี่ยวชาญในด้านวิศวกรรมซอฟต์แวร์
             </p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             @foreach($data['faculty'] as $index => $member)
-            <div class="bg-white p-6 rounded-xl shadow-lg card-hover border border-gray-300">
+            <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-lg card-hover border border-gray-300 dark:border-gray-600 dark-transition">
                 <div class="mb-4">
                     <img src="{{ $member['image'] }}" alt="{{ $member['name'] }}" class="w-24 h-24 rounded-full mx-auto object-cover">
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 text-center">
                     {{ $member['name'] }}
                 </h3>
-                <p class="text-sm text-primary-600 mb-2 text-center font-medium">
+                <p class="text-sm text-primary-600 dark:text-primary-400 mb-2 text-center font-medium">
                     {{ $member['position'] }}
                 </p>
             </div>
@@ -60,123 +176,234 @@
         </div>
         
         <div class="text-center mt-12">
-            <a href="{{ route('faculty') }}" class="inline-block bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors border-b-2 border-gray-300">
+            <a href="{{ route('faculty') }}" class="inline-block bg-primary-600 dark:bg-primary-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 dark:hover:bg-primary-800 transition-colors border-b-2 border-gray-300 dark:border-gray-600">
                 ดูทั้งหมด
             </a>
         </div>
     </div>
 </section>
 
-<!-- Programs Section -->
-<section id="programs" class="py-20 bg-white">
+<!-- Laboratories Section -->
+<section class="py-20 bg-white dark:bg-gray-900 dark-transition">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                ผลงานของเรา
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                ห้องปฏิบัติการ
             </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                ห้องปฏิบัติการที่ทันสมัยและครบครันสำหรับการเรียนรู้ด้านวิศวกรรมซอฟต์แวร์
+            </p>
         </div>
         
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            @foreach($data['programs'] as $program)
-            <div class="bg-gradient-to-br from-primary-50 to-secondary-50 rounded-2xl shadow-lg card-hover overflow-hidden">
-                <div class="h-64 overflow-hidden">
-                    <img src="{{ $program['image'] }}" alt="{{ $program['title'] }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
-                </div>
-                
-                <div class="p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900">
-                            {{ $program['title'] }}
-                        </h3>
-                        <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-semibold">
-                            {{ $program['duration'] }}
-                        </span>
-                    </div>
-                    
-                    <p class="text-gray-600 mb-6">
-                        {{ $program['description'] }}
-                    </p>
-                    
-                    @if(isset($program['activity']))
-                    <div class="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6">
-                        <p class="text-primary-800 font-medium">
-                            {{ $program['activity'] }}
-                        </p>
-                    </div>
-                    @endif
-                    
-                    @if(isset($program['highlights']) && is_array($program['highlights']) && count($program['highlights']) > 0)
-                    <div class="space-y-3 mb-6">
-                        @foreach($program['highlights'] as $highlight)
-                        <div class="flex items-center">
-                            <div class="w-2 h-2 bg-primary-500 rounded-full mr-3"></div>
-                            <span class="text-gray-700">{{ $highlight }}</span>
+        @if(isset($data['laboratories']) && count($data['laboratories']) > 0)
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            @foreach(array_slice($data['laboratories'], 0, 2) as $lab)
+            <div class="bg-white dark:bg-gray-700 p-8 rounded-xl shadow-lg card-hover border border-gray-300 dark:border-gray-600 dark-transition">
+                @if($lab['image'])
+                <div class="mb-6 h-48 overflow-hidden rounded-lg">
+                    @if(str_starts_with($lab['image'], 'data:image'))
+                        <img src="{{ $lab['image'] }}" alt="{{ $lab['name'] }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                    @else
+                        <div class="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">🔬</div>
+                                <p class="text-gray-600 font-medium">{{ $lab['name'] }}</p>
+                            </div>
                         </div>
-                        @endforeach
-                    </div>
                     @endif
-                    
-                    <button onclick="openModal('{{ $loop->index }}')"
-                            class="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors">
-                        อ่านเพิ่มเติม →
-                    </button>
                 </div>
+                @endif
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                    {{ $lab['name'] }}
+                </h3>
+                <p class="text-md text-primary-600 dark:text-primary-400 mb-4 font-medium">
+                    {{ $lab['building'] }}
+                </p>
+                @if(isset($lab['description']) && $lab['description'])
+                <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {{ str($lab['description'])->limit(120) }}
+                </p>
+                @endif
             </div>
             @endforeach
         </div>
+        @else
+        <div class="text-center py-8">
+            <div class="text-6xl mb-4">🔬</div>
+            <p class="text-gray-600 dark:text-gray-400 text-lg">ไม่มีข้อมูลห้องปฏิบัติการในขณะนี้</p>
+        </div>
+        @endif
         
         <div class="text-center mt-12">
-            <a href="{{ route('programs') }}" class="inline-block bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors border-b-2 border-gray-300">
-                ดูผลงานทั้งหมด
+            <a href="{{ route('laboratories') }}" class="inline-block bg-primary-600 dark:bg-primary-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 dark:hover:bg-primary-800 transition-colors border-b-2 border-gray-300 dark:border-gray-600">
+                ดูทั้งหมด
             </a>
         </div>
     </div>
 </section>
 
-<!-- Program Detail Modal -->
-<div id="programModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
-    <div class="flex items-center justify-center min-h-screen px-4">
-        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 id="modalTitle" class="text-2xl font-bold text-gray-900"></h3>
-                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+<!-- Faculty Research Section -->
+<section id="faculty-research" class="py-20 bg-gray-50 dark:bg-gray-800 dark-transition">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                ผลงานอาจารย์
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                ผลงานวิจัยและการนำเสนองานของอาจารย์ประจำสาขา
+            </p>
+        </div>
+        
+        @if(isset($data['faculty_research']) && count($data['faculty_research']) > 0)
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            @foreach($data['faculty_research'] as $research)
+            <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-lg card-hover border border-gray-300 dark:border-gray-600 dark-transition">
+                @if($research['image'])
+                <div class="mb-4">
+                    <img src="{{ $research['image'] }}" alt="{{ $research['title'] }}" class="w-full h-32 rounded-lg object-cover">
                 </div>
-                
-                <div id="modalImage" class="mb-6">
-                    <img id="modalImg" src="" alt="" class="w-full h-64 object-cover rounded-lg">
-                </div>
-                
-                <div id="modalActivity" class="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6">
-                    <p id="modalActivityText" class="text-primary-800 font-medium"></p>
-                </div>
-                
-                <div id="modalContent" class="space-y-4">
-                    <div class="prose max-w-none">
-                        <h4 class="text-lg font-semibold text-gray-900 mb-3">รายละเอียดเพิ่มเติม</h4>
-                        <div id="modalDetails" class="text-gray-600"></div>
-                        
-                        <h4 class="text-lg font-semibold text-gray-900 mt-6 mb-3">ผลลัพธ์ที่ได้รับ</h4>
-                        <div id="modalResults" class="text-gray-600"></div>
-                        
-                        <h4 class="text-lg font-semibold text-gray-900 mt-6 mb-3">การมีส่วนร่วม</h4>
-                        <div id="modalParticipation" class="text-gray-600"></div>
-                    </div>
-                </div>
-                
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    <button onclick="closeModal()" class="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
-                        ปิด
-                    </button>
-                </div>
+                @endif
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {{ $research['title'] }}
+                </h3>
+                <p class="text-sm text-primary-600 dark:text-primary-400 mb-2 font-medium">
+                    {{ $research['type'] }}
+                </p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                    โดย: {{ $research['faculty']['name'] ?? 'N/A' }}
+                </p>
+                @if(isset($research['description']) && $research['description'])
+                <p class="text-sm text-gray-600 dark:text-gray-300">
+                    {{ str($research['description'])->limit(80) }}
+                </p>
+                @endif
             </div>
+            @endforeach
+        </div>
+        @else
+        <div class="text-center py-8">
+            <p class="text-gray-600 dark:text-gray-400">ไม่มีข้อมูลผลงานอาจารย์ในขณะนี้</p>
+        </div>
+        @endif
+        
+        <div class="text-center mt-12">
+            <a href="{{ route('faculty.research') }}" class="inline-block bg-primary-600 dark:bg-primary-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 dark:hover:bg-primary-800 transition-colors border-b-2 border-gray-300 dark:border-gray-600">
+                ดูทั้งหมด
+            </a>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Student Projects Section -->
+<section id="student-projects" class="py-20 bg-white dark:bg-gray-900 dark-transition">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                ผลงานนักศึกษา
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                โครงการและผลงานที่น่าประทับใจของนักศึกษาสาขาวิศวกรรมซอฟต์แวร์
+            </p>
+        </div>
+        
+        @if(isset($data['student_projects']) && count($data['student_projects']) > 0)
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            @foreach($data['student_projects'] as $project)
+            <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-lg card-hover border border-gray-300 dark:border-gray-600 dark-transition">
+                @if($project['image'])
+                <div class="mb-4">
+                    <img src="{{ $project['image'] }}" alt="{{ $project['title'] }}" class="w-full h-32 rounded-lg object-cover">
+                </div>
+                @endif
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {{ $project['title'] }}
+                </h3>
+                <p class="text-sm text-primary-600 dark:text-primary-400 mb-2 font-medium">
+                    {{ $project['student_name'] }}
+                </p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                    ปีที่ทำ: {{ $project['year'] }}
+                </p>
+                @if(isset($project['description']) && $project['description'])
+                <p class="text-sm text-gray-600 dark:text-gray-300">
+                    {{ str($project['description'])->limit(80) }}
+                </p>
+                @endif
+            </div>
+            @endforeach
+        </div>
+        @else
+        <div class="text-center py-8">
+            <p class="text-gray-600 dark:text-gray-400">ไม่มีข้อมูลผลงานนักศึกษาในขณะนี้</p>
+        </div>
+        @endif
+        
+        <div class="text-center mt-12">
+            <a href="{{ route('student.projects') }}" class="inline-block bg-primary-600 dark:bg-primary-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 dark:hover:bg-primary-800 transition-colors border-b-2 border-gray-300 dark:border-gray-600">
+                ดูทั้งหมด
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Alumni Section -->
+<section class="py-20 bg-gray-50 dark:bg-gray-800 dark-transition">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                ข้อมูลศิษย์เก่า
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                บัณฑิตที่ประสบความสำเร็จในสายงานด้านเทคโนโลยีสารสนเทศ
+            </p>
+        </div>
+        
+        @if(isset($data['alumni']) && count($data['alumni']) > 0)
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            @foreach($data['alumni'] as $alum)
+            <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-lg card-hover border border-gray-300 dark:border-gray-600 dark-transition">
+                @if($alum['image'])
+                <div class="mb-4">
+                    <img src="{{ $alum['image'] }}" alt="{{ $alum['name'] }}" class="w-24 h-24 rounded-full mx-auto object-cover">
+                </div>
+                @endif
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 text-center">
+                    {{ $alum['name'] }}
+                </h3>
+                <p class="text-sm text-primary-600 dark:text-primary-400 mb-2 text-center font-medium">
+                    {{ $alum['position'] }}
+                </p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2 text-center">
+                    {{ $alum['company'] }}
+                </p>
+                @if($alum['graduation_year'])
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2 text-center">
+                    รุ่น {{ $alum['graduation_year'] }}
+                </p>
+                @endif
+                @if(isset($alum['role']) && $alum['role'])
+                <p class="text-sm text-gray-600 dark:text-gray-300 text-center">
+                    {{ str($alum['role'])->limit(60) }}
+                </p>
+                @endif
+            </div>
+            @endforeach
+        </div>
+        @else
+        <div class="text-center py-8">
+            <p class="text-gray-600 dark:text-gray-400">ไม่มีข้อมูลศิษย์เก่าในขณะนี้</p>
+        </div>
+        @endif
+        
+        <div class="text-center mt-12">
+            <a href="{{ route('alumni') }}" class="inline-block bg-primary-600 dark:bg-primary-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 dark:hover:bg-primary-800 transition-colors border-b-2 border-gray-300 dark:border-gray-600">
+                ดูทั้งหมด
+            </a>
+        </div>
+    </div>
+</section>
+
+
 
 <!-- News Section -->
 <section id="news" class="py-20 bg-gray-50">
@@ -342,72 +569,4 @@
     }
 </style>
 
-<script>
-const programDetails = [
-    {
-        title: 'การแข่งขันหุ่นยนต์ระดับมหาวิทยาลัย',
-        image: '/images/robot-competition.jpg',
-        activity: 'กิจกรรม: การแข่งขันหุ่นยนต์ระดับมหาวิทยาลัย 2024',
-        details: `การแข่งขันหุ่นยนต์ระดับมหาวิทยาลัยเป็นกิจกรรมที่สำคัญที่สุดของปีการศึกษา 
-        โดยมีนักศึกษาจากหลายมหาวิทยาลัยทั่วประเทศเข้าร่วมแข่งขัน
-        กิจกรรมนี้ประกอบด้วยการออกแบบหุ่นยนต์ที่สามารถทำงานต่างๆ ได้`,
-        results: `ทีมจากสาขาวิศวกรรมซอฟต์แวร์คว้ารางวัลที่ 2 ในการแข่งขันในปี 2024
-        และได้รับรางวัลชนะเลิศด้านนวัตกรรมอีกด้วย
-        นักศึกษาที่เข้าร่วมได้รับทุนสนับสนุนจากมหาวิทยาลัยชั้นนำ`,
-        participation: `นักศึกษาชั้นปี 2-4 สามารถสมัครเข้าร่วมทีมได้
-        กิจกรรมจัดขึ้นทุกปีในเดือนกุมภาพันธ์์-มีนาคม
-        ติดต่อได้ที่: se.robotics@university.ac.th`
-    },
-    {
-        title: 'กิจกรรมวันวิทยาศาสตร์',
-        image: '/images/science-day.jpg',
-        activity: 'วันวิทยาศาสตร์แห่งชาติ 2566',
-        details: `กิจกรรมวันวิทยาศาสตร์แห่งชาติเป็นกิจกรรมประจำปีที่สาขาจัดขึ้นเพื่อส่งเสริม
-        ความสนใจด้านวิทยาศาสตร์และเทคโนโลยีให้กับประชาชนทั่วไป
-        โดยมีนิทรรศการซอฟต์แวร์ และปฏิบัติการควบคู่ไป`,
-        results: `มีผู้เข้าร่วมกิจกรรมมากกว่า 500 คน
-        มีการจัดนิทรรศการและการสาธิตโครงการต่างๆ
-        ได้รับการตอบรับที่ดีมากจากผู้เข้าร่วมและประชาชน`,
-        participation: `เปิดรับสมัครนักศึกษาทุกชั้นปีและประชาชนทั่วไป
-        กิจกรรมจัดขึ้นทุกปีในเดือนสิงหาคม
-        สมัครออนไลน์ได้ที่: se.scienceday@university.ac.th`
-    }
-];
-
-function openModal(index) {
-    const modal = document.getElementById('programModal');
-    const program = programDetails[index];
-    
-    document.getElementById('modalTitle').textContent = program.title;
-    document.getElementById('modalImg').src = program.image;
-    document.getElementById('modalImg').alt = program.title;
-    document.getElementById('modalActivityText').textContent = program.activity;
-    document.getElementById('modalDetails').innerHTML = program.details.replace(/\n/g, '<br>');
-    document.getElementById('modalResults').innerHTML = program.results.replace(/\n/g, '<br>');
-    document.getElementById('modalParticipation').innerHTML = program.participation.replace(/\n/g, '<br>');
-    
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-    const modal = document.getElementById('programModal');
-    modal.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-// Close modal when clicking outside
-document.getElementById('programModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeModal();
-    }
-});
-
-// Close modal with ESC key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeModal();
-    }
-});
-</script>
 @endsection

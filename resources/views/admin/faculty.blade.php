@@ -12,11 +12,11 @@
                 extend: {
                     colors: {
                         primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            500: '#dc2626',
+                            600: '#b91c1c',
+                            700: '#991b1b',
                         }
                     }
                 }
@@ -71,6 +71,36 @@
                         <a href="{{ route('admin.news') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
                             <span class="mr-3">📰</span>
                             ข่าวสารและกิจกรรม
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.curriculum') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
+                            <span class="mr-3">📚</span>
+                            หลักสูตร
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.laboratories') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
+                            <span class="mr-3">🔬</span>
+                            ห้องปฏิบัติการ
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.faculty.research') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
+                            <span class="mr-3">📊</span>
+                            ผลงานอาจารย์
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.student.projects') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
+                            <span class="mr-3">💻</span>
+                            ผลงานนักศึกษา
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.alumni') }}" class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded">
+                            <span class="mr-3">👨‍🎓</span>
+                            ข้อมูลศิษย์เก่า
                         </a>
                     </li>
                 </ul>

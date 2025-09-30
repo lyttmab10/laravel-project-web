@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Faculty;
 use App\Models\Program;
 use App\Models\News;
+use App\Models\Curriculum;
+use App\Models\Laboratory;
+use App\Models\FacultyResearch;
+use App\Models\StudentProject;
+use App\Models\Alumni;
 
 class HomeController extends Controller
 {
@@ -15,6 +20,11 @@ class HomeController extends Controller
         $facultyData = Faculty::all()->toArray();
         $programsData = Program::all()->toArray();
         $newsData = News::all()->toArray();
+        $curriculumData = Curriculum::first(); // Get the main curriculum
+        $laboratoriesData = Laboratory::all()->toArray();
+        $facultyResearchData = FacultyResearch::with('faculty')->get()->toArray();
+        $studentProjectsData = StudentProject::all()->toArray();
+        $alumniData = Alumni::all()->toArray();
         
         $data = [
             'page_title' => 'สาขาวิศวกรรมซอฟต์แวร์',
@@ -31,9 +41,14 @@ class HomeController extends Controller
                 ['number' => '20+', 'label' => 'อาจารย์ผู้เชี่ยวชาญ'],
                 ['number' => '100+', 'label' => 'บริษัทพันธมิตร']
             ],
-            'faculty' => array_slice($facultyData, 0, 4),
-            'programs' => array_slice($programsData, 0, 2),
-            'news' => array_slice($newsData, 0, 3)
+            'faculty' => count($facultyData) > 0 ? array_slice($facultyData, 0, 4) : [],
+            'programs' => count($programsData) > 0 ? array_slice($programsData, 0, 2) : [],
+            'news' => count($newsData) > 0 ? array_slice($newsData, 0, 3) : [],
+            'curriculum' => $curriculumData,
+            'laboratories' => count($laboratoriesData) > 0 ? array_slice($laboratoriesData, 0, 4) : [],
+            'faculty_research' => count($facultyResearchData) > 0 ? array_slice($facultyResearchData, 0, 4) : [],
+            'student_projects' => count($studentProjectsData) > 0 ? array_slice($studentProjectsData, 0, 4) : [],
+            'alumni' => count($alumniData) > 0 ? array_slice($alumniData, 0, 4) : []
         ];
 
         return view('home', compact('data'));
@@ -56,6 +71,36 @@ class HomeController extends Controller
         $programs = Program::all();
         return view('programs', compact('programs'));
     }
+    
+    public function curriculum()
+    {
+        $curriculum = Curriculum::first();
+        return view('curriculum', compact('curriculum'));
+    }
+    
+    public function laboratories()
+    {
+        $laboratories = Laboratory::all();
+        return view('laboratories', compact('laboratories'));
+    }
+    
+    public function facultyResearch()
+    {
+        $facultyResearch = FacultyResearch::with('faculty')->get();
+        return view('faculty-research', compact('facultyResearch'));
+    }
+    
+    public function studentProjects()
+    {
+        $studentProjects = StudentProject::all();
+        return view('student-projects', compact('studentProjects'));
+    }
+    
+    public function alumni()
+    {
+        $alumni = Alumni::all();
+        return view('alumni', compact('alumni'));
+    }
 
     public function adminLogin()
     {
@@ -67,9 +112,20 @@ class HomeController extends Controller
         $stats = [
             'faculty_count' => Faculty::count(),
             'programs_count' => Program::count(),
-            'news_count' => News::count()
+            'news_count' => News::count(),
+            'curriculum_count' => Curriculum::count(),
+            'laboratories_count' => Laboratory::count(),
+            'faculty_research_count' => FacultyResearch::count(),
+            'student_projects_count' => StudentProject::count(),
+            'alumni_count' => Alumni::count()
         ];
-        return view('admin.dashboard', compact('stats'));
+        
+        // Get actual data for CRUD operations
+        $faculty = Faculty::all();
+        $news = News::all();
+        $programs = Program::all();
+        
+        return view('admin.dashboard', compact('stats', 'faculty', 'news', 'programs'));
     }
 
     public function adminFaculty()
@@ -88,6 +144,37 @@ class HomeController extends Controller
     {
         $news = News::all();
         return view('admin.news', compact('news'));
+    }
+    
+    public function adminCurriculum()
+    {
+        $curriculums = Curriculum::all(); // Get all curriculums for editing
+        return view('admin.curriculum', compact('curriculums'));
+    }
+    
+    public function adminLaboratories()
+    {
+        $laboratories = Laboratory::all();
+        return view('admin.laboratories', compact('laboratories'));
+    }
+    
+    public function adminFacultyResearch()
+    {
+        $facultyResearch = FacultyResearch::with('faculty')->get();
+        $faculty = Faculty::all(); // For dropdown selection
+        return view('admin.faculty-research', compact('facultyResearch', 'faculty'));
+    }
+    
+    public function adminStudentProjects()
+    {
+        $studentProjects = StudentProject::all();
+        return view('admin.student-projects', compact('studentProjects'));
+    }
+    
+    public function adminAlumni()
+    {
+        $alumni = Alumni::all();
+        return view('admin.alumni', compact('alumni'));
     }
 
     // Faculty CRUD Methods
@@ -267,5 +354,45 @@ class HomeController extends Controller
         $news->delete();
         
         return response()->json(['success' => true, 'message' => 'ลบข่าวสำเร็จ']);
+    }
+    
+    // Curriculum CRUD Methods
+    public function updateCurriculum(Request $request, $id)
+    {
+        $request->validate([
+            'degree_name_th' => 'required|string|max:255',
+            'degree_name_en' => 'required|string|max:255',
+            'degree_abbr_th' => 'nullable|string|max:50',
+            'degree_abbr_en' => 'nullable|string|max:50',
+            'program_type' => 'required|string|max:255',
+            'duration_years' => 'required|integer|min:1|max:10',
+            'credits' => 'required|integer|min:1|max:300',
+            'language' => 'required|string|max:200',
+            'tuition_fee' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'curriculum_year' => 'nullable|string|max:50',
+            'pdf_url' => 'nullable|url|max:500',
+            'video_url' => 'nullable|url|max:500'
+        ]);
+
+        $curriculum = Curriculum::findOrFail($id);
+        
+        $curriculum->update([
+            'degree_name_th' => $request->degree_name_th,
+            'degree_name_en' => $request->degree_name_en,
+            'degree_abbr_th' => $request->degree_abbr_th,
+            'degree_abbr_en' => $request->degree_abbr_en,
+            'program_type' => $request->program_type,
+            'duration_years' => $request->duration_years,
+            'credits' => $request->credits,
+            'language' => $request->language,
+            'tuition_fee' => $request->tuition_fee,
+            'description' => $request->description,
+            'curriculum_year' => $request->curriculum_year,
+            'pdf_url' => $request->pdf_url,
+            'video_url' => $request->video_url
+        ]);
+        
+        return redirect()->route('admin.curriculum')->with('success', 'แก้ไขข้อมูลหลักสูตรสำเร็จ');
     }
 }
